@@ -9,7 +9,7 @@ mydb = mysql.connector.connect(
 )
 
 
-headers = {"Authorization": "Bearer TOKEN"}
+headers = {"Authorization": "Bearer Token"}
 
 def run_gquery(owner, repository):
     request = requests.post('https://api.github.com/graphql',
@@ -47,7 +47,7 @@ limit = 5
 cont = True
 
 while cont:
-    mycursor.execute(f"SELECT * FROM repositorio WHERE stars IS NULL LIMIT {limit}")
+    mycursor.execute(f"SELECT * FROM repository WHERE stars IS NULL LIMIT {limit}")
     print(f"Consulta")
 
     myresult = mycursor.fetchall()
@@ -60,13 +60,13 @@ while cont:
                 description = json['data']['repository']['description']
                 if description is not None:
                     descriptionSplit = description.split()
-                    for ds in descriptionSplit:
-                        if len(ds) > 1:
-                            sql = "INSERT INTO repositorio_descricao (repositorio_id, word) VALUES (%s, %s)"
-                            val = (x[0],ds)
-                            mycursor.execute(sql,val)
-                            mydb.commit()
-                            
+                    descriptionSplitNew = [str for str in descriptionSplit if len(str) > 1]
+                    sql = "INSERT INTO repository_description (repository_id, word) VALUES (%s, %s)"
+                    ll = []
+                    for d in descriptionSplitNew:
+                        ll.append((x[0], d))
+                    mycursor.executemany(sql, ll)
+                    mydb.commit()
                 
                 topics = json['data']['repository']['repositoryTopics']['edges']
                 if len(topics) > 0:
@@ -76,16 +76,16 @@ while cont:
                         topicName = t['node']['topic']['name']
                         topicsSave.append((x[0], topicName))
                     print(topicsSave)
-                    sql = "INSERT INTO repositorio_tags (repositorio_id, tag) VALUES (%s, %s)"
+                    sql = "INSERT INTO repository_tag (repository_id, tag) VALUES (%s, %s)"
                     mycursor.executemany(sql, topicsSave)
                     mydb.commit()
 
                 stars = json['data']['repository']['stargazerCount']
-                sql = f"UPDATE repositorio SET stars = {stars} WHERE id={x[0]}"
+                sql = f"UPDATE repository SET stars = {stars} WHERE id={x[0]}"
                 mycursor.execute(sql)
                 mydb.commit()
             else:
-                sql = f"UPDATE repositorio SET stars = 0 WHERE id={x[0]}"
+                sql = f"UPDATE repository SET stars = 0 WHERE id={x[0]}"
                 mycursor.execute(sql)
                 mydb.commit()
     else:
