@@ -32,7 +32,7 @@ while cont is not False:
     ]
 
     mycursor = mydb.cursor()
-    sql = "INSERT INTO repositorio (repname) VALUES (%s)"
+    sql = "INSERT INTO repository (repname) VALUES (%s)"
     ll = []
     for d in data:
         ll.append((d,))
