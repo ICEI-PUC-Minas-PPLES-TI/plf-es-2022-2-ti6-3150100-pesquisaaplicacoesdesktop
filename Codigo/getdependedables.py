@@ -11,11 +11,13 @@ mydb = mysql.connector.connect(
 
 
 repo = "electron/electron"
-page_num = 3448
 url = 'https://github.com/{}/network/dependents'.format(repo)
 browser = webdriver.Edge()
 
-for i in range(page_num):
+cont = True
+i=0
+
+while cont is not False:
     print("GET " + url)
     browser.get(url)
     r = browser.page_source
@@ -29,18 +31,20 @@ for i in range(page_num):
         for t in soup.findAll("div", {"class": "Box-row"})
     ]
 
-    print(data)
-
+    mycursor = mydb.cursor()
+    sql = "INSERT INTO repository (repname) VALUES (%s)"
+    ll = []
     for d in data:
-        mycursor = mydb.cursor()
-        sql = f"INSERT INTO repositorio (repname) VALUES ('{d}')"
-        mycursor.execute(sql)
-        mydb.commit()
-        print("1 record inserted, ID:", mycursor.lastrowid)
+        ll.append((d,))
+    mycursor.executemany(sql, ll)
+    mydb.commit()
+    print(f"Inserted {len(data)} repos")
 
-    print(len(data))
     paginationContainer = soup.find("div", {"class":"paginate-container"}).findAll('a')
-    if paginationContainer[-1]:
+    print(len(paginationContainer))
+    if len(paginationContainer) > 1 or i == 0:
         url = paginationContainer[-1]["href"]
+        i += 1
     else:
-        break
+        cont = False
+        print("END")
