@@ -1,14 +1,20 @@
 from bs4 import BeautifulSoup
 import mysql.connector
 from selenium import webdriver
+from dotenv import dotenv_values
+
+config = dotenv_values(".env")
+HOST=config["HOST"]
+USER=config["USER"]
+PASSWORD=config["PASSWORD"]
+DATABASE=config["DATABASE"]
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="root",
-  database="appdesktop"
+  host=HOST,
+  user=USER,
+  password=PASSWORD,
+  database=DATABASE
 )
-
 
 repo = "electron/electron"
 url = 'https://github.com/{}/network/dependents'.format(repo)

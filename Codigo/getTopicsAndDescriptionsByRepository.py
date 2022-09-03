@@ -1,13 +1,19 @@
 import mysql.connector
 import requests
+from dotenv import dotenv_values
+
+config = dotenv_values(".env")
+HOST=config["HOST"]
+USER=config["USER"]
+PASSWORD=config["PASSWORD"]
+DATABASE=config["DATABASE"]
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="root",
-  database="appdesktop"
+  host=HOST,
+  user=USER,
+  password=PASSWORD,
+  database=DATABASE
 )
-
 
 headers = {"Authorization": "Bearer Token"}
 
