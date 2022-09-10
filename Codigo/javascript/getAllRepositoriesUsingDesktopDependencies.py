@@ -13,7 +13,7 @@ USER=config["USER"]
 PASSWORD=config["PASSWORD"]
 DATABASE=config["DATABASE"]
 
-filename = './lastURL.txt'
+filename = str(Path(__file__).parent / "lastURL.txt")
 
 mydb = mysql.connector.connect(
   host=HOST,
