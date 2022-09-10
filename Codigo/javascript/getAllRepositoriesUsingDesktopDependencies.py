@@ -1,18 +1,27 @@
-from bs4 import BeautifulSoup
 import mysql.connector
+from pathlib import Path
+from dotenv import dotenv_values
 from selenium import webdriver
+from bs4 import BeautifulSoup
+from webdriver_manager.chrome import ChromeDriverManager
+
+env_path = Path(__file__).parent / "..\\.env"
+config = dotenv_values(str(env_path))
+HOST=config["HOST"]
+USER=config["USER"]
+PASSWORD=config["PASSWORD"]
+DATABASE=config["DATABASE"]
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="root",
-  database="appdesktop"
+  host=HOST,
+  user=USER,
+  password=PASSWORD,
+  database=DATABASE
 )
-
 
 repo = "electron/electron"
 url = 'https://github.com/{}/network/dependents'.format(repo)
-browser = webdriver.Edge()
+browser = webdriver.Chrome(ChromeDriverManager().install())
 
 cont = True
 i=0
@@ -32,7 +41,7 @@ while cont is not False:
     ]
 
     mycursor = mydb.cursor()
-    sql = "INSERT INTO repository (repname) VALUES (%s)"
+    sql = "INSERT INTO repository (name_with_owner) VALUES (%s)"
     ll = []
     for d in data:
         ll.append((d,))

@@ -1,15 +1,24 @@
 import mysql.connector
 import requests
+from pathlib import Path
+from dotenv import dotenv_values
+
+env_path = Path(__file__).parent / ".\\.env"
+config = dotenv_values(str(env_path))
+HOST=config["HOST"]
+USER=config["USER"]
+PASSWORD=config["PASSWORD"]
+DATABASE=config["DATABASE"]
+GITHUB_TOKEN=config["GITHUB_TOKEN"]
 
 mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="root",
-  database="appdesktop"
+  host=HOST,
+  user=USER,
+  password=PASSWORD,
+  database=DATABASE
 )
 
-
-headers = {"Authorization": "Bearer Token"}
+headers = {"Authorization": ("Bearer " + GITHUB_TOKEN)}
 
 def run_gquery(owner, repository):
     request = requests.post('https://api.github.com/graphql',
