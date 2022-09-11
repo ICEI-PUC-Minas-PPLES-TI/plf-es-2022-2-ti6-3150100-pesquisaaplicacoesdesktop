@@ -25,15 +25,17 @@ mydb = mysql.connector.connect(
 repo = "electron/electron"
 browser = webdriver.Chrome(ChromeDriverManager().install())
 
-file1 = open(filename,"r")
+try:
+    file1 = open(filename,"r")
+    content = file1.read()
+    if not content:
+        url = 'https://github.com/{}/network/dependents'.format(repo)
+    else:
+        url = content
 
-content = file1.read()
-if not content:
+    file1.close()
+except:
     url = 'https://github.com/{}/network/dependents'.format(repo)
-else:
-    url = content
-
-file1.close()
 
 cont = True
 i=0
