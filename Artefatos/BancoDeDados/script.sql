@@ -144,3 +144,25 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- desktop_research.repository_description_openia definition
+
+CREATE TABLE `repository_description_openia` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `repository_id` int unsigned NOT NULL,
+  `openia_describe` varchar(250) COLLATE utf8mb4_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_repository_description_repository1_idx` (`repository_id`) USING BTREE,
+  CONSTRAINT `fk_repository_description_repository1_copy` FOREIGN KEY (`repository_id`) REFERENCES `repository` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- desktop_research.repository_categories_openia definition
+
+CREATE TABLE `repository_categories_openia` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `repository_description_openia_id` int unsigned NOT NULL,
+  `categorie` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_repository_description_repository1_idx` (`repository_description_openia_id`) USING BTREE,
+  CONSTRAINT `fk_repository_description_repository1_copy_copy` FOREIGN KEY (`repository_description_openia_id`) REFERENCES `repository` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
