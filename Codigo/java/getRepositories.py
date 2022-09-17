@@ -65,6 +65,18 @@ def checkDependency(dependency):
             return d[0]
     return 0
 
+mycursor = mydb.cursor()
+mycursor.execute("SELECT * FROM repository_language WHERE `language`='Java'")
+myresult = mycursor.fetchall()
+if len(myresult) == 0:
+    sql = "INSERT INTO repository_language (language) VALUES (%s)"
+    val = ("Java",)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    languageID = mycursor.lastrowid
+else:
+    languageID = myresult[0][0]
+
 try:
     file1 = open(filename,"r")
     content = file1.read()
@@ -92,11 +104,12 @@ while after != "":
             inDep = checkDependency(t.text)
             if inDep > 0:
                 mycursor = mydb.cursor()
-                sql = "INSERT INTO repository (name_with_owner, stars, created_at, repository_language_id, repository_dependency_id) VALUES (%s, %s,  NOW() ,2, %s)"
-                val = (dt['nameWithOwner'], dt['stargazerCount'], inDep)
+                sql = "INSERT INTO repository (name_with_owner, stars, created_at, repository_language_id, repository_dependency_id) VALUES (%s, %s,  NOW() ,%s, %s)"
+                val = (dt['nameWithOwner'], dt['stargazerCount'], languageID, inDep)
                 mycursor.execute(sql, val)
                 mydb.commit()
                 print("Inserted ROW")
+                break
 
     if result['data']['search']['pageInfo']['endCursor']:
         after = result['data']['search']['pageInfo']['endCursor']

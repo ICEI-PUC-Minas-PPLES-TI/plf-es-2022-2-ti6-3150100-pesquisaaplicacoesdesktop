@@ -25,6 +25,18 @@ mydb = mysql.connector.connect(
 repo = "electron/electron"
 browser = webdriver.Chrome(ChromeDriverManager().install())
 
+mycursor = mydb.cursor()
+mycursor.execute("SELECT * FROM repository_language WHERE `language`='Javascript'")
+myresult = mycursor.fetchall()
+if len(myresult) == 0:
+    sql = "INSERT INTO repository_language (language) VALUES (%s)"
+    val = ("Javascript",)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    languageID = mycursor.lastrowid
+else:
+    languageID = myresult[0][0]
+
 try:
     file1 = open(filename,"r")
     content = file1.read()
@@ -57,11 +69,11 @@ while cont is not False:
     print(data)
 
     mycursor = mydb.cursor()
-    sql = "INSERT INTO repository (name_with_owner, stars, created_at, repository_language_id, repository_dependency_id) VALUES (%s, %s,  NOW() ,1, 1)"
+    sql = "INSERT INTO repository (name_with_owner, stars, created_at, repository_language_id, repository_dependency_id) VALUES (%s, %s,  NOW() ,%s, 1)"
     ll = []
     for d in data:
         if int(d[1]) >= 100:
-            ll.append((d[0],d[1]))
+            ll.append((d[0],d[1],languageID))
     mycursor.executemany(sql, ll)
     mydb.commit()
     print(f"Inserted {len(data)} repos")
