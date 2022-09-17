@@ -80,10 +80,10 @@ while cont:
                 # descriptionSplit = description.split()
                 response = openai.Completion.create(
                     model="text-davinci-002",
-                    prompt=f"Set the domain of this GitHub description:{description}",
-                    temperature=0.6,
+                    prompt=f"Describe in one word the domain of this GitHub description:{description}",
+                    temperature=0.6,  # aleatoriedade
                 )
-                result = response.choices[0].text
+                result = response.choices[0].text.strip()
                 print("Resultado openIA")
                 print(result)
                 if len(result) < 50:
@@ -131,6 +131,7 @@ while cont:
             sql = f"UPDATE repository SET stars = 0 WHERE id={x[0]}"
             mycursor.execute(sql)
             mydb.commit()
+        print("---")
     else:
         cont = False
 
