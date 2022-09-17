@@ -7,16 +7,16 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 env_path = Path(__file__).parent / "..\\.env"
 config = dotenv_values(str(env_path))
-HOST=config["HOST"]
-USER=config["USER"]
-PASSWORD=config["PASSWORD"]
-DATABASE=config["DATABASE"]
+HOST = config["HOST"]
+USER = config["USER"]
+PASSWORD = config["PASSWORD"]
+DATABASE = config["DATABASE"]
 
 mydb = mysql.connector.connect(
-  host=HOST,
-  user=USER,
-  password=PASSWORD,
-  database=DATABASE
+    host=HOST,
+    user=USER,
+    password=PASSWORD,
+    database=DATABASE
 )
 
 repo = "electron/electron"
@@ -24,7 +24,7 @@ url = 'https://github.com/{}/network/dependents'.format(repo)
 browser = webdriver.Chrome(ChromeDriverManager().install())
 
 cont = True
-i=0
+i = 0
 
 while cont is not False:
     print("GET " + url)
@@ -34,8 +34,8 @@ while cont is not False:
 
     data = [
         "{}/{}".format(
-            t.find('a', {"data-repository-hovercards-enabled":""}).text,
-            t.find('a', {"data-hovercard-type":"repository"}).text
+            t.find('a', {"data-repository-hovercards-enabled": ""}).text,
+            t.find('a', {"data-hovercard-type": "repository"}).text
         )
         for t in soup.findAll("div", {"class": "Box-row"})
     ]
@@ -49,7 +49,8 @@ while cont is not False:
     mydb.commit()
     print(f"Inserted {len(data)} repos")
 
-    paginationContainer = soup.find("div", {"class":"paginate-container"}).findAll('a')
+    paginationContainer = soup.find(
+        "div", {"class": "paginate-container"}).findAll('a')
     print(len(paginationContainer))
     if len(paginationContainer) > 1 or i == 0:
         url = paginationContainer[-1]["href"]
