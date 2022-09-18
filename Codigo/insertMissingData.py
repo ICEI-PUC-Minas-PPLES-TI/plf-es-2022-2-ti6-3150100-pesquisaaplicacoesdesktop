@@ -84,7 +84,11 @@ def setCreatedAT(repo):
     url = "https://github.com/%s/%s/graphs/code-frequency"%(split[0],split[1])
     browser.get(url)
     browser.implicitly_wait(10)
-    dateComplete = browser.find_element(By.CSS_SELECTOR, "g.tick").text
+    try: 
+        dateComplete = browser.find_element(By.CSS_SELECTOR, "g.tick").text
+    except:
+        browser.quit()
+        return
     dateFormated = dateComplete.split('/')
     # yyyy-mm-dd
     date = "20%s-%s-01"%(dateFormated[1],dateFormated[0])
@@ -94,10 +98,10 @@ def setCreatedAT(repo):
     browser.quit()
 
 def getMissingData(item):
-    # if(item["full_description"]==None):
-    #     setDescription(item)
-    # if(item["number_of_tags"]==0):
-    #     setTags(item)
+    if(item["full_description"]==None):
+        setDescription(item)
+    if(item["number_of_tags"]==0):
+        setTags(item)
     setCreatedAT(item)
 
 for result in results:
