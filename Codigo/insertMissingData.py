@@ -7,6 +7,10 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 env_path = Path(__file__).parent / ".\\.env"
 config = dotenv_values(str(env_path))
@@ -29,10 +33,10 @@ cursor.execute("SELECT * FROM repository")
 
 results = cursor.fetchall()
 
-def setDescription(name):
+def setDescription(repo):
     browser = webdriver.Chrome(ChromeDriverManager().install())
-    url = "https://github.com/"+name["name_with_owner"]
-    id = name["id"]
+    url = "https://github.com/"+repo["name_with_owner"]
+    id = repo["id"]
     browser.get(url)
     try:
         data = browser.find_element(By.XPATH, '//*[@id="repo-content-pjax-container"]/div/div/div[3]/div[2]/div/div[1]/div/p').text
@@ -44,10 +48,10 @@ def setDescription(name):
     db.commit()
     browser.quit()
 
-def setTags(name):
+def setTags(repo):
     browser = webdriver.Chrome(ChromeDriverManager().install())
-    url = "https://github.com/"+name["name_with_owner"]
-    idRepo = name["id"]
+    url = "https://github.com/"+repo["name_with_owner"]
+    idRepo = repo["id"]
     idTagTable = None
     browser.get(url)
     try:
@@ -73,11 +77,28 @@ def setTags(name):
 
 # def setIssues
 
+def setCreatedAT(repo):
+    browser = webdriver.Chrome(ChromeDriverManager().install())
+    split = repo["name_with_owner"].split("/")
+    id = repo["id"]
+    url = "https://github.com/%s/%s/graphs/code-frequency"%(split[0],split[1])
+    browser.get(url)
+    browser.implicitly_wait(10)
+    dateComplete = browser.find_element(By.CSS_SELECTOR, "g.tick").text
+    dateFormated = dateComplete.split('/')
+    # yyyy-mm-dd
+    date = "20%s-%s-01"%(dateFormated[1],dateFormated[0])
+    sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date,id)
+    cursor.execute(sql)
+    db.commit()
+    browser.quit()
+
 def getMissingData(item):
-    if(item["full_description"]==None):
-        setDescription(item)
-    if(item["number_of_tags"]==0):
-        setTags(item)
+    # if(item["full_description"]==None):
+    #     setDescription(item)
+    # if(item["number_of_tags"]==0):
+    #     setTags(item)
+    setCreatedAT(item)
 
 for result in results:
     getMissingData(result)
