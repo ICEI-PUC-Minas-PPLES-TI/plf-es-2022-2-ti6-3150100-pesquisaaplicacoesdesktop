@@ -23,8 +23,6 @@ db = mysql.connector.connect(
   database=DATABASE
 )
 
-browser = webdriver.Chrome(ChromeDriverManager().install())
-
 cursor = db.cursor(dictionary=True)
 
 cursor.execute("SELECT * FROM repository")
@@ -32,21 +30,31 @@ cursor.execute("SELECT * FROM repository")
 results = cursor.fetchall()
 
 def setDescription(name):
+    browser = webdriver.Chrome(ChromeDriverManager().install())
     url = "https://github.com/"+name["name_with_owner"]
     id = name["id"]
     browser.get(url)
-    data = browser.find_element(By.XPATH, '//*[@id="repo-content-pjax-container"]/div/div/div[3]/div[2]/div/div[1]/div/p').text
+    try:
+        data = browser.find_element(By.XPATH, '//*[@id="repo-content-pjax-container"]/div/div/div[3]/div[2]/div/div[1]/div/p').text
+    except: 
+        data = ""
+    print(data)
     sql = "UPDATE repository SET full_description = '%s' where id = %s"%(data,id)
     cursor.execute(sql)
     db.commit()
     browser.quit()
 
 def setTags(name):
+    browser = webdriver.Chrome(ChromeDriverManager().install())
     url = "https://github.com/"+name["name_with_owner"]
     idRepo = name["id"]
     idTagTable = None
     browser.get(url)
-    tags = browser.find_elements(By.CSS_SELECTOR, "a.topic-tag.topic-tag-link")
+    try:
+        tags = browser.find_elements(By.CSS_SELECTOR, "a.topic-tag.topic-tag-link")
+    except:
+        browser.quit()
+        return
     cursor.execute("SELECT MAX(id) FROM repository_tag")
     maxId = cursor.fetchall()
     cursor.execute("UPDATE repository SET number_of_tags = '%s' where id = %s"%(len(tags),idRepo))
@@ -61,12 +69,15 @@ def setTags(name):
     db.commit()
     browser.quit()
 
+# def setPullRequests
+
+# def setIssues
 
 def getMissingData(item):
     if(item["full_description"]==None):
         setDescription(item)
-    # if(item["number_of_tags"]==0):
-    #     setTags(item)
+    if(item["number_of_tags"]==0):
+        setTags(item)
 
 for result in results:
     getMissingData(result)
