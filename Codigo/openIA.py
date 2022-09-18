@@ -56,7 +56,7 @@ if len(repositories) > 0:
             domain_description_by_openia = response.choices[0].text.strip()
             print("OpenIA domain description: " + domain_description_by_openia)
             try:
-                sql = f"INSERT INTO repository_description_openia (repository_id, openia_describe) VALUES ({repository_id}, '{domain_description_by_openia}')"
+                sql = f"INSERT INTO repository_description_openia (repository_id, description) VALUES ({repository_id}, '{domain_description_by_openia}')"
                 mycursor.execute(sql)
                 mydb.commit()
             except:
