@@ -42,7 +42,6 @@ def setDescription(repo):
         data = browser.find_element(By.XPATH, '//*[@id="repo-content-pjax-container"]/div/div/div[3]/div[2]/div/div[1]/div/p').text
     except: 
         data = ""
-    print(data)
     sql = "UPDATE repository SET full_description = '%s' where id = %s"%(data,id)
     cursor.execute(sql)
     db.commit()
@@ -102,7 +101,10 @@ def getMissingData(item):
         setDescription(item)
     if(item["number_of_tags"]==0):
         setTags(item)
-    setCreatedAT(item)
+    date=item["created_at"]
+    date = date.strftime("20%y-%m-%d")
+    if(date=='2022-09-17'):
+        setCreatedAT(item)
 
 for result in results:
     getMissingData(result)
