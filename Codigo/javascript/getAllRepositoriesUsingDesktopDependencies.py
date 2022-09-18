@@ -1,4 +1,5 @@
 import mysql.connector
+import re
 from pathlib import Path
 from dotenv import dotenv_values
 from selenium import webdriver
@@ -12,6 +13,8 @@ USER = config["USER"]
 PASSWORD = config["PASSWORD"]
 DATABASE = config["DATABASE"]
 
+filename = str(Path(__file__).parent / "lastURL.txt")
+
 mydb = mysql.connector.connect(
     host=HOST,
     user=USER,
@@ -20,8 +23,32 @@ mydb = mysql.connector.connect(
 )
 
 repo = "electron/electron"
-url = 'https://github.com/{}/network/dependents'.format(repo)
 browser = webdriver.Chrome(ChromeDriverManager().install())
+
+mycursor = mydb.cursor()
+mycursor.execute(
+    "SELECT * FROM repository_language WHERE `language`='Javascript'")
+myresult = mycursor.fetchall()
+if len(myresult) == 0:
+    sql = "INSERT INTO repository_language (language) VALUES (%s)"
+    val = ("Javascript",)
+    mycursor.execute(sql, val)
+    mydb.commit()
+    languageID = mycursor.lastrowid
+else:
+    languageID = myresult[0][0]
+
+try:
+    file1 = open(filename, "r")
+    content = file1.read()
+    if not content:
+        url = 'https://github.com/{}/network/dependents'.format(repo)
+    else:
+        url = content
+
+    file1.close()
+except:
+    url = 'https://github.com/{}/network/dependents'.format(repo)
 
 cont = True
 i = 0
@@ -33,18 +60,21 @@ while cont is not False:
     soup = BeautifulSoup(r, "html.parser")
 
     data = [
-        "{}/{}".format(
+        ("{}/{}".format(
             t.find('a', {"data-repository-hovercards-enabled": ""}).text,
             t.find('a', {"data-hovercard-type": "repository"}).text
-        )
+        ), re.sub("[^0-9]", "", t.find('span', {"class": "color-fg-muted text-bold pl-3"}).text))
         for t in soup.findAll("div", {"class": "Box-row"})
     ]
 
+    print(data)
+
     mycursor = mydb.cursor()
-    sql = "INSERT INTO repository (name_with_owner) VALUES (%s)"
+    sql = "INSERT INTO repository (name_with_owner, stars, created_at, repository_language_id, repository_dependency_id) VALUES (%s, %s,  NOW() ,%s, 1)"
     ll = []
     for d in data:
-        ll.append((d,))
+        if int(d[1]) >= 100:
+            ll.append((d[0], d[1], languageID))
     mycursor.executemany(sql, ll)
     mydb.commit()
     print(f"Inserted {len(data)} repos")
@@ -54,6 +84,9 @@ while cont is not False:
     print(len(paginationContainer))
     if len(paginationContainer) > 1 or i == 0:
         url = paginationContainer[-1]["href"]
+        file1 = open(filename, "w+")
+        file1.write(url)
+        file1.close()
         i += 1
     else:
         cont = False
