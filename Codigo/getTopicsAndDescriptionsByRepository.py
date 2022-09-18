@@ -73,7 +73,8 @@ while cont:
                     sql = "INSERT INTO repository_description (repository_id, word) VALUES (%s, %s)"
                     ll = []
                     for d in descriptionSplitNew:
-                        ll.append((x[0], d))
+                        if len(d) <= 50:
+                            ll.append((x[0], d))
                     mycursor.executemany(sql, ll)
                     mydb.commit()
                 
@@ -83,7 +84,8 @@ while cont:
                     topicsSave = []
                     for t in topics:
                         topicName = t['node']['topic']['name']
-                        topicsSave.append((x[0], topicName))
+                        if len(topicName) <= 30:
+                            topicsSave.append((x[0], topicName))
                     print(topicsSave)
                     sql = "INSERT INTO repository_tag (repository_id, tag) VALUES (%s, %s)"
                     mycursor.executemany(sql, topicsSave)
