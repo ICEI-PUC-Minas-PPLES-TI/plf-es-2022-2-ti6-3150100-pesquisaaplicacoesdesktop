@@ -1,15 +1,11 @@
-from lib2to3.pgen2 import driver
 import mysql.connector
 import re
 from pathlib import Path
 from dotenv import dotenv_values
 from selenium import webdriver
-from bs4 import BeautifulSoup
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 env_path = Path(__file__).parent / ".\\.env"
