@@ -1,5 +1,6 @@
+from datetime import date
 import mysql.connector
-import re
+import requests
 from pathlib import Path
 from dotenv import dotenv_values
 from selenium import webdriver
@@ -63,9 +64,65 @@ def setTags(repo, browser):
         idTagTable=idTagTable+1
     db.commit()
 
-# def setPullRequests
-
-# def setIssues
+def setCreatedAt2(repo):
+    id = repo["id"]
+    headers = {"Authorization": ("Bearer " + GITHUB_TOKEN)}
+    data = repo["name_with_owner"].split("/")
+    owner = data[0]
+    repoName = data[1]
+    request = requests.post('https://api.github.com/graphql',
+                            json={'query': """
+                                    {
+                                      repository(owner: \"""" + owner + """\", name: \"""" + repoName + """\") {
+                                            createdAt
+                                        }
+                                    }
+                                    """ 
+                                }, headers=headers)
+    if request.status_code == 200:
+        response = (request.json())
+        dateFormated = response["data"]["repository"]["createdAt"][0:10]
+        print(dateFormated)
+        # yyyy-mm-dd
+        date = "20%s-%s-01"%(dateFormated[1],dateFormated[0])
+        sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date,id)
+        cursor.execute(sql)
+        db.commit()
+    else:
+        raise Exception("Query failed to run by returning code of {}.".format(
+            request.status_code))   
+        
+def setPullRequests(repo):
+    idRepo = repo["id"]
+    data = repo["name_with_owner"].split("/")
+    owner = data[0]
+    repoName = data[1]
+    request = requests.get("https://api.github.com/repos/%s/%s/pulls?state=all"%(owner,repoName))
+    if request.status_code == 200:
+        responses = (request.json())
+        cursor.execute("SELECT MAX(id) FROM repository_pull_request")
+        maxId = cursor.fetchall()
+        if (maxId[0]['MAX(id)']==None):
+            idPrTable = 1
+        else: 
+            idPrTable = maxId[0]['MAX(id)']+1
+        for response in responses:
+            if(response['merged_at']!=None):
+                date = (response['merged_at'])[0:4]
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable,date,idRepo))
+                idPrTable=idPrTable+1
+            elif(response['merged_at']==None and response['closed_at']!=None):
+                date = (response['closed_at'])[0:4]
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable,date,idRepo))
+                idPrTable=idPrTable+1
+            else:
+                date = (response['created_at'])[0:4]
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable,date,idRepo))
+                idPrTable=idPrTable+1
+        db.commit()
+        return
+    else:
+        return
 
 def setCreatedAT(repo, browser):
     split = repo["name_with_owner"].split("/")
@@ -85,24 +142,26 @@ def setCreatedAT(repo, browser):
     db.commit()
     
 
-def getMissingData(item, browser):
+def setMissingData(item, browser):
     if(item["full_description"]==None):
         setDescription(item, browser)
     if(item["number_of_tags"]==0):
         setTags(item, browser)
-    # essa tratativa foi so pq os repos que tinham estavam com a data do dia que foram criados (2022-09-17)
+    # essa tratativa foi so pq os repos que tinham estavam com a data do dia que foram criados (2022-09-17) 
     date=item["created_at"]
     date = date.strftime("20%y-%m-%d")
     if(date=='2022-09-17'):
     # despois pode tirar
         setCreatedAT(item, browser)
+    setPullRequests(item)
 
 
 def getAll():
     browser = webdriver.Chrome(ChromeDriverManager().install())
     for result in results:
         print("Analisando: "+result["name_with_owner"])
-        getMissingData(result, browser)
+        setMissingData(result, browser)
     browser.quit()
 
-getAll()
+setPullRequests(results[4])
+
