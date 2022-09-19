@@ -82,7 +82,7 @@ def setCreatedAt2(repo):
         dateFormated = response["data"]["repository"]["createdAt"][0:10]
         print(dateFormated)
         # yyyy-mm-dd
-        sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date, id)
+        sql = "UPDATE repository SET created_at = '%s' where id = %s"%(dateFormated, id)
         cursor.execute(sql)
         db.commit()
     else:
