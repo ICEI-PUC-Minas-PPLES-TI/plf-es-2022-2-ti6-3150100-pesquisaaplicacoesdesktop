@@ -29,8 +29,7 @@ cursor.execute("SELECT * FROM repository")
 
 results = cursor.fetchall()
 
-def setDescription(repo):
-    browser = webdriver.Chrome(ChromeDriverManager().install())
+def setDescription(repo, browser):
     url = "https://github.com/"+repo["name_with_owner"]
     id = repo["id"]
     browser.get(url)
@@ -41,10 +40,8 @@ def setDescription(repo):
     sql = "UPDATE repository SET full_description = '%s' where id = %s"%(data,id)
     cursor.execute(sql)
     db.commit()
-    browser.quit()
 
-def setTags(repo):
-    browser = webdriver.Chrome(ChromeDriverManager().install())
+def setTags(repo, browser):
     url = "https://github.com/"+repo["name_with_owner"]
     idRepo = repo["id"]
     idTagTable = None
@@ -52,7 +49,6 @@ def setTags(repo):
     try:
         tags = browser.find_elements(By.CSS_SELECTOR, "a.topic-tag.topic-tag-link")
     except:
-        browser.quit()
         return
     cursor.execute("SELECT MAX(id) FROM repository_tag")
     maxId = cursor.fetchall()
@@ -66,23 +62,20 @@ def setTags(repo):
         cursor.execute('insert into repository_tag (id,tag,repository_id) values (%s,"%s",%s)'%(idTagTable,tag.text,idRepo))
         idTagTable=idTagTable+1
     db.commit()
-    browser.quit()
 
 # def setPullRequests
 
 # def setIssues
 
-def setCreatedAT(repo):
-    browser = webdriver.Chrome(ChromeDriverManager().install())
+def setCreatedAT(repo, browser):
     split = repo["name_with_owner"].split("/")
     id = repo["id"]
     url = "https://github.com/%s/%s/graphs/code-frequency"%(split[0],split[1])
     browser.get(url)
-    browser.implicitly_wait(10)
+    browser.implicitly_wait(20)
     try: 
         dateComplete = browser.find_element(By.CSS_SELECTOR, "g.tick").text
     except:
-        browser.quit()
         return
     dateFormated = dateComplete.split('/')
     # yyyy-mm-dd
@@ -90,20 +83,26 @@ def setCreatedAT(repo):
     sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date,id)
     cursor.execute(sql)
     db.commit()
-    browser.quit()
+    
 
-def getMissingData(item):
+def getMissingData(item, browser):
     if(item["full_description"]==None):
-        setDescription(item)
+        setDescription(item, browser)
     if(item["number_of_tags"]==0):
-        setTags(item)
+        setTags(item, browser)
     # essa tratativa foi so pq os repos que tinham estavam com a data do dia que foram criados (2022-09-17)
     date=item["created_at"]
     date = date.strftime("20%y-%m-%d")
     if(date=='2022-09-17'):
     # despois pode tirar
-        setCreatedAT(item)
+        setCreatedAT(item, browser)
 
-for result in results:
-    getMissingData(result)
 
+def getAll():
+    browser = webdriver.Chrome(ChromeDriverManager().install())
+    for result in results:
+        print("Analisando: "+result["name_with_owner"])
+        getMissingData(result, browser)
+    browser.quit()
+
+getAll()
