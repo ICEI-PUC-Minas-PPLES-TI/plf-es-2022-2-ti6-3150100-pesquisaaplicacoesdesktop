@@ -143,12 +143,7 @@ def setMissingData(item, browser):
         setDescription(item, browser)
     if(item["number_of_tags"]==0):
         setTags(item, browser)
-    # essa tratativa foi so pq os repos que tinham estavam com a data do dia que foram criados (2022-09-17) 
-    date=item["created_at"]
-    date = date.strftime("20%y-%m-%d")
-    if(date=='2022-09-17'):
-    # despois pode tirar
-        setCreatedAT(item, browser)
+    setCreatedAt2(item)
     setPullRequests(item)
 
 def getAll():
