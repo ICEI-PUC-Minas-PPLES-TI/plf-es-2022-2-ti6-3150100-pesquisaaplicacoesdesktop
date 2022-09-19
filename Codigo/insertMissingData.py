@@ -1,4 +1,3 @@
-from datetime import date
 import mysql.connector
 import requests
 from pathlib import Path
@@ -7,7 +6,6 @@ from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium import webdriver
-from selenium.webdriver.support import expected_conditions as EC
 
 env_path = Path(__file__).parent / ".\\.env"
 config = dotenv_values(str(env_path))
@@ -38,7 +36,7 @@ def setDescription(repo, browser):
         data = browser.find_element(By.XPATH, '//*[@id="repo-content-pjax-container"]/div/div/div[3]/div[2]/div/div[1]/div/p').text
     except: 
         data = ""
-    sql = "UPDATE repository SET full_description = '%s' where id = %s"%(data,id)
+    sql = "UPDATE repository SET full_description = '%s' where id = %s"%(data, id)
     cursor.execute(sql)
     db.commit()
 
@@ -53,14 +51,14 @@ def setTags(repo, browser):
         return
     cursor.execute("SELECT MAX(id) FROM repository_tag")
     maxId = cursor.fetchall()
-    cursor.execute("UPDATE repository SET number_of_tags = '%s' where id = %s"%(len(tags),idRepo))
+    cursor.execute("UPDATE repository SET number_of_tags = '%s' where id = %s"%(len(tags), idRepo))
     db.commit()
     if (maxId[0]['MAX(id)']==None):
         idTagTable = 1
     else: 
         idTagTable = maxId[0]['MAX(id)']+1
     for tag in tags:
-        cursor.execute('insert into repository_tag (id,tag,repository_id) values (%s,"%s",%s)'%(idTagTable,tag.text,idRepo))
+        cursor.execute('insert into repository_tag (id,tag,repository_id) values (%s,"%s",%s)'%(idTagTable, tag.text,idRepo))
         idTagTable=idTagTable+1
     db.commit()
 
@@ -85,7 +83,7 @@ def setCreatedAt2(repo):
         print(dateFormated)
         # yyyy-mm-dd
         date = "20%s-%s-01"%(dateFormated[1],dateFormated[0])
-        sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date,id)
+        sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date, id)
         cursor.execute(sql)
         db.commit()
     else:
@@ -97,7 +95,7 @@ def setPullRequests(repo):
     data = repo["name_with_owner"].split("/")
     owner = data[0]
     repoName = data[1]
-    request = requests.get("https://api.github.com/repos/%s/%s/pulls?state=all"%(owner,repoName))
+    request = requests.get("https://api.github.com/repos/%s/%s/pulls?state=all"%(owner, repoName))
     if request.status_code == 200:
         responses = (request.json())
         cursor.execute("SELECT MAX(id) FROM repository_pull_request")
@@ -109,15 +107,15 @@ def setPullRequests(repo):
         for response in responses:
             if(response['merged_at']!=None):
                 date = (response['merged_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable,date,idRepo))
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable, date, idRepo))
                 idPrTable=idPrTable+1
             elif(response['merged_at']==None and response['closed_at']!=None):
                 date = (response['closed_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable,date,idRepo))
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable, date, idRepo))
                 idPrTable=idPrTable+1
             else:
                 date = (response['created_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable,date,idRepo))
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable, date, idRepo))
                 idPrTable=idPrTable+1
         db.commit()
         return
@@ -127,7 +125,7 @@ def setPullRequests(repo):
 def setCreatedAT(repo, browser):
     split = repo["name_with_owner"].split("/")
     id = repo["id"]
-    url = "https://github.com/%s/%s/graphs/code-frequency"%(split[0],split[1])
+    url = "https://github.com/%s/%s/graphs/code-frequency"%(split[0], split[1])
     browser.get(url)
     browser.implicitly_wait(20)
     try: 
@@ -137,11 +135,10 @@ def setCreatedAT(repo, browser):
     dateFormated = dateComplete.split('/')
     # yyyy-mm-dd
     date = "20%s-%s-01"%(dateFormated[1],dateFormated[0])
-    sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date,id)
+    sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date, id)
     cursor.execute(sql)
     db.commit()
     
-
 def setMissingData(item, browser):
     if(item["full_description"]==None):
         setDescription(item, browser)
@@ -155,7 +152,6 @@ def setMissingData(item, browser):
         setCreatedAT(item, browser)
     setPullRequests(item)
 
-
 def getAll():
     browser = webdriver.Chrome(ChromeDriverManager().install())
     for result in results:
@@ -163,5 +159,5 @@ def getAll():
         setMissingData(result, browser)
     browser.quit()
 
-setPullRequests(results[4])
+getAll()
 
