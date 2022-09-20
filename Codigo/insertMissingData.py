@@ -25,7 +25,10 @@ db = mysql.connector.connect(
 
 cursor = db.cursor(dictionary=True)
 
-cursor.execute("SELECT * FROM repository")
+# cursor.execute("SELECT * FROM repository")
+# cursor.execute("select * from repository where full_description IS NULL")
+cursor.execute("select * from repository where number_of_tags = 0")
+
 
 results = cursor.fetchall()
 
@@ -40,16 +43,15 @@ def setDescription(repo, browser):
         data = data.replace("'","")
     except: 
         print(repo["name_with_owner"]+" failed at set description")
-        return
+        data = browser.find_element(By.XPATH, '//*[@id="repo-content-pjax-container"]/div/div/div[3]/div[2]/div/div[1]/div/div[1]').text
+        data = data.replace("'","")
+        if(data==None):
+            return
     if(len(data)<3):
         data = "Not Found"
     sql = "UPDATE repository SET full_description = '%s' where id = %s"%(data, id)
     cursor.execute(sql)
     db.commit()
-    lastRepo = repo["name_with_owner"]
-    f = open("lastRepo.txt", "w")
-    f.write(lastRepo)
-    f.close()
 
 def setTags(repo, browser):
     url = "https://github.com/"+repo["name_with_owner"]
@@ -74,7 +76,7 @@ def setTags(repo, browser):
         idTagTable=idTagTable+1
     db.commit()
 
-def setCreatedAt2(repo):
+def setCreatedAt(repo):
     id = repo["id"]
     headers = {"Authorization": ("Bearer " + GITHUB_TOKEN)}
     data = repo["name_with_owner"].split("/")
@@ -133,44 +135,21 @@ def setPullRequests(repo):
     else:
         print(repo["name_with_owner"]+" failed at set PR")
         return
-
-def setCreatedAT(repo, browser):
-    split = repo["name_with_owner"].split("/")
-    id = repo["id"]
-    url = "https://github.com/%s/%s/graphs/code-frequency"%(split[0], split[1])
-    browser.get(url)
-    browser.implicitly_wait(20)
-    try: 
-        dateComplete = browser.find_element(By.CSS_SELECTOR, "g.tick").text
-    except:
-        print(repo["name_with_owner"]+" failed at set createdat")
-        return
-    dateFormated = dateComplete.split('/')
-    # yyyy-mm-dd
-    date = "20%s-%s-01"%(dateFormated[1],dateFormated[0])
-    sql = "UPDATE repository SET created_at = '%s' where id = %s"%(date, id)
-    cursor.execute(sql)
-    db.commit()
     
 def setMissingData(item, browser):
     if(item["full_description"]==None or len(item["full_description"])==0):
         setDescription(item, browser)
     if(item["number_of_tags"]==0):
         setTags(item, browser)
-    # setCreatedAt2(item)
+    # setCreatedAt(item)
     # setPullRequests(item)
 
-def getAll():
+def getAllData():
     browser = webdriver.Chrome(ChromeDriverManager().install())
-    repos = 0;
     for result in results:
         print("Analisando: "+result["name_with_owner"])
+        time.sleep(0.5)
         setMissingData(result, browser)
-        repos+=1
-        if(repos==50):
-            print("waiting...")
-            time.sleep(20)
-            repos = 0;
     browser.quit()
 
 def getLastRepoId():
@@ -180,8 +159,9 @@ def getLastRepoId():
     id = cursor.fetchall()
     return id[0]['id']
 
-
-lastRepo = getLastRepoId()
-
 while results[len(results)-1]["full_description"] == None:
-    getAll()
+    try:
+        getAllData()
+    except:
+        time.sleep(10)
+        getAllData()
