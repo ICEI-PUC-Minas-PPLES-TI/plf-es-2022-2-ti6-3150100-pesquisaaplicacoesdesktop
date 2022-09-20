@@ -29,6 +29,8 @@ cursor.execute("SELECT * FROM repository")
 
 results = cursor.fetchall()
 
+lastRepo = ""
+
 def setDescription(repo, browser):
     url = "https://github.com/"+repo["name_with_owner"]
     id = repo["id"]
@@ -44,6 +46,10 @@ def setDescription(repo, browser):
     sql = "UPDATE repository SET full_description = '%s' where id = %s"%(data, id)
     cursor.execute(sql)
     db.commit()
+    lastRepo = repo["name_with_owner"]
+    f = open("lastRepo.txt", "w")
+    f.write(lastRepo)
+    f.close()
 
 def setTags(repo, browser):
     url = "https://github.com/"+repo["name_with_owner"]
@@ -147,11 +153,11 @@ def setCreatedAT(repo, browser):
     db.commit()
     
 def setMissingData(item, browser):
-    # if(item["full_description"]==None or len(item["full_description"])==0):
-    #     setDescription(item, browser)
-    # if(item["number_of_tags"]==0):
-    #     setTags(item, browser)
-    setCreatedAt2(item)
+    if(item["full_description"]==None or len(item["full_description"])==0):
+        setDescription(item, browser)
+    if(item["number_of_tags"]==0):
+        setTags(item, browser)
+    # setCreatedAt2(item)
     # setPullRequests(item)
 
 def getAll():
@@ -161,9 +167,21 @@ def getAll():
         print("Analisando: "+result["name_with_owner"])
         setMissingData(result, browser)
         repos+=1
-        if(repos==200):
-            time.sleep(300)
+        if(repos==50):
+            print("waiting...")
+            time.sleep(20)
             repos = 0;
     browser.quit()
 
-getAll()
+def getLastRepoId():
+    f = open("lastRepo.txt", "r")
+    sql = 'select id from repository where name_with_owner = "%s"'%(f.read())
+    cursor.execute(sql)
+    id = cursor.fetchall()
+    return id[0]['id']
+
+
+lastRepo = getLastRepoId()
+
+while results[len(results)-1]["full_description"] == None:
+    getAll()
