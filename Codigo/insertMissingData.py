@@ -1,3 +1,5 @@
+from cmath import log
+import numbers
 import re
 import mysql.connector
 import requests
@@ -109,32 +111,37 @@ def setPullRequests(repo):
     data = repo["name_with_owner"].split("/")
     owner = data[0]
     repoName = data[1]
-    request = requests.get("https://api.github.com/repos/%s/%s/pulls?state=all"%(owner, repoName))
-    if request.status_code == 200:
-        responses = (request.json())
-        cursor.execute("SELECT MAX(id) FROM repository_pull_request")
-        maxId = cursor.fetchall()
-        if (maxId[0]['MAX(id)']==None):
-            idPrTable = 1
-        else: 
-            idPrTable = maxId[0]['MAX(id)']+1
-        for response in responses:
-            if(response['merged_at']!=None):
-                date = (response['merged_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable, date, idRepo))
-                idPrTable=idPrTable+1
-            elif(response['merged_at']==None and response['closed_at']!=None):
-                date = (response['closed_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable, date, idRepo))
-                idPrTable=idPrTable+1
-            else:
-                date = (response['created_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable, date, idRepo))
-                idPrTable=idPrTable+1
-        db.commit()
+    cursor.execute("select count(`year`) from repository_pull_request rpr where repository_id = %s"%(idRepo))
+    numberOfPrs = cursor.fetchall()
+    if((numberOfPrs[0]['count(`year`)'])<1):
+        request = requests.get("https://api.github.com/repos/%s/%s/pulls?state=all"%(owner, repoName))
+        if request.status_code == 200:
+            responses = (request.json())
+            cursor.execute("SELECT MAX(id) FROM repository_pull_request")
+            maxId = cursor.fetchall()
+            if (maxId[0]['MAX(id)']==None):
+                idPrTable = 1
+            else: 
+                idPrTable = maxId[0]['MAX(id)']+1
+            for response in responses:
+                if(response['merged_at']!=None):
+                    date = (response['merged_at'])[0:4]
+                    cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable, date, idRepo))
+                    idPrTable=idPrTable+1
+                elif(response['merged_at']==None and response['closed_at']!=None):
+                    date = (response['closed_at'])[0:4]
+                    cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable, date, idRepo))
+                    idPrTable=idPrTable+1
+                else:
+                    date = (response['created_at'])[0:4]
+                    cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable, date, idRepo))
+                    idPrTable=idPrTable+1
+            db.commit()
+            return
+        else:
+            print(repo["name_with_owner"]+" failed at set PR")
         return
     else:
-        print(repo["name_with_owner"]+" failed at set PR")
         return
     
 def setMissingData(item, browser):
