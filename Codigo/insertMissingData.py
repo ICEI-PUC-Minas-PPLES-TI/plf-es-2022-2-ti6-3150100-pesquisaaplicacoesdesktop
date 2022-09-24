@@ -1,3 +1,4 @@
+import re
 import mysql.connector
 import requests
 import time
@@ -25,9 +26,9 @@ db = mysql.connector.connect(
 
 cursor = db.cursor(dictionary=True)
 
-# cursor.execute("SELECT * FROM repository")
+cursor.execute("SELECT * FROM repository")
 # cursor.execute("select * from repository where full_description IS NULL")
-cursor.execute("select * from repository where number_of_tags = 0")
+# cursor.execute("select * from repository where number_of_tags = 0")
 
 
 results = cursor.fetchall()
@@ -141,15 +142,19 @@ def setMissingData(item, browser):
         setDescription(item, browser)
     if(item["number_of_tags"]==0):
         setTags(item, browser)
-    # setCreatedAt(item)
-    # setPullRequests(item)
+    setCreatedAt(item)
+    setPullRequests(item)
 
 def getAllData():
     browser = webdriver.Chrome(ChromeDriverManager().install())
+    total = len(results)
     for result in results:
+        print('faltam: %s'%(total))
         print("Analisando: "+result["name_with_owner"])
         time.sleep(0.5)
         setMissingData(result, browser)
+        time.sleep(0.5)
+        total-=1
     browser.quit()
 
 def getLastRepoId():
@@ -158,10 +163,3 @@ def getLastRepoId():
     cursor.execute(sql)
     id = cursor.fetchall()
     return id[0]['id']
-
-while results[len(results)-1]["full_description"] == None:
-    try:
-        getAllData()
-    except:
-        time.sleep(10)
-        getAllData()
