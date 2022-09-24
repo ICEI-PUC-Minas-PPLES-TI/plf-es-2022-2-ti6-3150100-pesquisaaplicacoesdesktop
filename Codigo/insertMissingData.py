@@ -163,3 +163,5 @@ def getLastRepoId():
     cursor.execute(sql)
     id = cursor.fetchall()
     return id[0]['id']
+
+getAllData()
