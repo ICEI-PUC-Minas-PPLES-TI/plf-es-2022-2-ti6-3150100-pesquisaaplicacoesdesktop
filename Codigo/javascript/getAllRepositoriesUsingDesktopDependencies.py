@@ -8,25 +8,26 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 env_path = Path(__file__).parent / "..\\.env"
 config = dotenv_values(str(env_path))
-HOST=config["HOST"]
-USER=config["USER"]
-PASSWORD=config["PASSWORD"]
-DATABASE=config["DATABASE"]
+HOST = config["HOST"]
+USER = config["USER"]
+PASSWORD = config["PASSWORD"]
+DATABASE = config["DATABASE"]
 
 filename = str(Path(__file__).parent / "lastURL.txt")
 
 mydb = mysql.connector.connect(
-  host=HOST,
-  user=USER,
-  password=PASSWORD,
-  database=DATABASE
+    host=HOST,
+    user=USER,
+    password=PASSWORD,
+    database=DATABASE
 )
 
 repo = "electron/electron"
 browser = webdriver.Chrome(ChromeDriverManager().install())
 
 mycursor = mydb.cursor()
-mycursor.execute("SELECT * FROM repository_language WHERE `language`='Javascript'")
+mycursor.execute(
+    "SELECT * FROM repository_language WHERE `language`='Javascript'")
 myresult = mycursor.fetchall()
 if len(myresult) == 0:
     sql = "INSERT INTO repository_language (language) VALUES (%s)"
@@ -38,7 +39,7 @@ else:
     languageID = myresult[0][0]
 
 try:
-    file1 = open(filename,"r")
+    file1 = open(filename, "r")
     content = file1.read()
     if not content:
         url = 'https://github.com/{}/network/dependents'.format(repo)
@@ -50,7 +51,7 @@ except:
     url = 'https://github.com/{}/network/dependents'.format(repo)
 
 cont = True
-i=0
+i = 0
 
 while cont is not False:
     print("GET " + url)
@@ -60,9 +61,9 @@ while cont is not False:
 
     data = [
         ("{}/{}".format(
-            t.find('a', {"data-repository-hovercards-enabled":""}).text,
-            t.find('a', {"data-hovercard-type":"repository"}).text
-        ), re.sub("[^0-9]", "", t.find('span', {"class":"color-fg-muted text-bold pl-3"}).text))
+            t.find('a', {"data-repository-hovercards-enabled": ""}).text,
+            t.find('a', {"data-hovercard-type": "repository"}).text
+        ), re.sub("[^0-9]", "", t.find('span', {"class": "color-fg-muted text-bold pl-3"}).text))
         for t in soup.findAll("div", {"class": "Box-row"})
     ]
 
@@ -73,16 +74,17 @@ while cont is not False:
     ll = []
     for d in data:
         if int(d[1]) >= 100:
-            ll.append((d[0],d[1],languageID))
+            ll.append((d[0], d[1], languageID))
     mycursor.executemany(sql, ll)
     mydb.commit()
     print(f"Inserted {len(data)} repos")
 
-    paginationContainer = soup.find("div", {"class":"paginate-container"}).findAll('a')
+    paginationContainer = soup.find(
+        "div", {"class": "paginate-container"}).findAll('a')
     print(len(paginationContainer))
     if len(paginationContainer) > 1 or i == 0:
         url = paginationContainer[-1]["href"]
-        file1 = open(filename,"w+")
+        file1 = open(filename, "w+")
         file1.write(url)
         file1.close()
         i += 1

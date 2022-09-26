@@ -1,0 +1,606 @@
+LOWER(category),contagem,válido
+analysis,3,1
+animation,3,1
+artificial intelligence,2,1
+authenticator,2,1
+automation,6,1
+backup,4,1
+browser,14,1
+browser extension,3,1
+browsers,4,1
+converter,2,1
+cryptocurrency,13,1
+cryptography,4,1
+data analysis,4,1
+data visualization,8,1
+database,6,1
+databases,7,1
+deep learning,5,1
+desktop automation,2,1
+downloader,4,1
+downloading,2,1
+editor,20,1
+encryption,7,1
+extension,10,1
+extensions,3,1
+file conversion,2,1
+file management,4,1
+file sharing,3,1
+firewall,3,1
+framework,20,1
+image processing,3,1
+image viewer,2,1
+installer,3,1
+launcher,5,1
+libraries,3,1
+library,26,1
+live streaming,2,1
+machine learning,5,1
+music player,4,1
+neural networks,5,1
+object detection,4,1
+password management,2,1
+password manager,2,1
+peer-to-peer,3,1
+reader,3,1
+recording,3,1
+remote desktop,2,1
+screen capture,2,1
+screen recorder,2,1
+screen sharing,2,1
+screenshot,2,1
+steam,6,1
+streaming,6,1
+task manager,2,1
+taskbar,3,1
+text editor,5,1
+text editors,3,1
+time tracking,2,1
+torrents,2,1
+tracking,2,1
+twitch extension,3,1
+uploading,3,1
+usb,5,1
+video downloader,2,1
+visualization,6,1
+web browser,2,1
+web browsers,11,1
+10,3,0
+2018-06-23,2,0
+2d,4,0
+3d,9,0
+3d modeling,2,0
+3d printing,3,0
+accounting,3,0
+accounts,2,0
+action,2,0
+adblocker,2,0
+ai,2,0
+and,3,0
+and more,2,0
+android,20,0
+angular,13,0
+animations,6,0
+anime,6,0
+api,20,0
+api development,3,0
+apis,3,0
+app,51,0
+apple music,2,0
+apple tv,2,0
+application,17,0
+application development,2,0
+application manager,2,0
+applications,9,0
+apps,7,0
+aspnet core,2,0
+assembly,2,0
+assessment,2,0
+assistant,2,0
+audio,15,0
+azure,2,0
+azure sql db,2,0
+backend,2,0
+bilibili,3,0
+bindings,2,0
+bitcoin,8,0
+blockchain,8,0
+board,3,0
+bot,6,0
+brightness,3,0
+budgeting,2,0
+builder,2,0
+business,2,0
+c,59,0
+cache,3,0
+camera,3,0
+card,2,0
+card games,2,0
+channel,2,0
+chat,7,0
+chrome,2,0
+class library,2,0
+classic,2,0
+cli,5,0
+client,27,0
+clojure,2,0
+cloud,3,0
+cloud storage,3,0
+cms,6,0
+code,10,0
+codebase,3,0
+coding,2,0
+collaboration,5,0
+collaborative,3,0
+collection,2,0
+color palette,2,0
+colors,3,0
+common,2,0
+communication,2,0
+community,4,0
+component,5,0
+components,7,0
+compression,2,0
+computer,3,0
+configuration,3,0
+console,3,0
+containers,2,0
+content,2,0
+content management,2,0
+control,4,0
+copy,2,0
+core,3,0
+crm,2,0
+cross platform,5,0
+cross-platform,25,0
+css,6,0
+csv,2,0
+custom,2,0
+customizable,3,0
+cybersecurity,2,0
+d3js,3,0
+dark theme,2,0
+dashboard,2,0
+data,11,0
+data discovery,2,0
+data extraction,2,0
+data storage,2,0
+data structures,2,0
+dataverse,2,0
+debug,3,0
+debugging,12,0
+decentralized,5,0
+demo,3,0
+demos,2,0
+dependencies,2,0
+deprecated,5,0
+deserialization,2,0
+design,9,0
+designers,2,0
+desktop,63,0
+desktop app,7,0
+desktop application,4,0
+desktop client,5,0
+developer tools,2,0
+developers,6,0
+development,18,0
+devops,3,0
+devtools,4,0
+diagrams,2,0
+dice,2,0
+discontinued,2,0
+discord,9,0
+display,3,0
+docker,6,0
+document management,2,0
+documentation,5,0
+documents,4,0
+dom,3,0
+download,2,0
+drawing,5,0
+drivers,3,0
+e-commerce,2,0
+easy to use,2,0
+ebooks,4,0
+ecommerce,2,0
+editing,8,0
+effects,3,0
+electron,101,0
+electron apps,3,0
+electron-vue,2,0
+elite dangerous,2,0
+email,6,0
+emailing,2,0
+emails,2,0
+engine,4,0
+entertainment,2,0
+entity framework,3,0
+environments,2,0
+etc,2,0
+ethereum,4,0
+evernote,2,0
+excel,5,0
+exchange,2,0
+execution,2,0
+explorer,3,0
+export,2,0
+fast,2,0
+file,4,0
+file explorer,2,0
+files,2,0
+finance,6,0
+firmware,2,0
+fixes,2,0
+flowchart,2,0
+for,2,0
+for windows,2,0
+forms,2,0
+frameworks,2,0
+free,12,0
+front-end,3,0
+frontend,4,0
+full-featured,2,0
+functional programming,2,0
+game,8,0
+game developers,2,0
+game development,3,0
+game engine,4,0
+games,9,0
+generator,6,0
+geospatial,3,0
+gif,2,0
+git,4,0
+github,3,0
+go,5,0
+google,3,0
+graph,3,0
+graphical,3,0
+graphics,4,0
+graphql,6,0
+grpc,2,0
+gui,26,0
+hardware,3,0
+haskell,2,0
+high performance,3,0
+history,3,0
+html,9,0
+html5,6,0
+hub,2,0
+icons,3,0
+ide,11,0
+ideas,2,0
+image,4,0
+images,11,0
+information,2,0
+information retrieval,2,0
+instagram,5,0
+install,2,0
+installation,2,0
+integrated development environment,2,0
+integration,2,0
+interactive,2,0
+interface,2,0
+internet,4,0
+interpreter,2,0
+ios,6,0
+iot,4,0
+iota,2,0
+ipc,2,0
+ipfs,2,0
+is a free,2,0
+issue tracker,2,0
+java,2,0
+javascript,52,0
+javascript intellisense,2,0
+jest,2,0
+jpg,2,0
+js,4,0
+json,4,0
+key,2,0
+keyboard,4,0
+keyboards,2,0
+knowledge management,2,0
+kubernetes,6,0
+language,5,0
+languages,2,0
+lightning,3,0
+lightning network,2,0
+lightweight,2,0
+linq,2,0
+linux,63,0
+live,4,0
+localization,2,0
+logging,2,0
+logon screen,2,0
+mac,29,0
+mac os,2,0
+mac os x,4,0
+macos,46,0
+mail,4,0
+malware,2,0
+management,15,0
+manager,9,0
+manga,3,0
+map,3,0
+map editor,2,0
+markdown,16,0
+markdown editor,2,0
+mastodon,2,0
+media,4,0
+media server,2,0
+memory,3,0
+menubar,3,0
+messaging,5,0
+messenger,2,0
+metadata,2,0
+microsoft,5,0
+middleware,2,0
+midi,4,0
+minecraft,5,0
+mini,2,0
+mobile,8,0
+mobile development,2,0
+mobx,2,0
+modding,2,0
+models,2,0
+modern,2,0
+mods,2,0
+module,3,0
+mongodb,5,0
+monitor,3,0
+monitoring,5,0
+monitors,2,0
+mono,2,0
+mouse,2,0
+mp3,3,0
+msbuild,2,0
+mstsc,2,0
+multilingual,2,0
+multiple,2,0
+music,31,0
+mvc,3,0
+mvvm,2,0
+mysql,4,0
+na,2,0
+neovim,3,0
+net,62,0
+net core,6,0
+net framework,5,0
+net standard,2,0
+net winforms,4,0
+network,6,0
+networking,2,0
+networks,2,0
+node,8,0
+nodejs,31,0
+note taking,2,0
+note-taking,2,0
+notebook,3,0
+notes,4,0
+notifications,2,0
+npm,2,0
+ntfs,2,0
+objects,2,0
+ocr,2,0
+office,3,0
+one,2,0
+online,3,0
+open,5,0
+open source,39,0
+open-source,15,0
+opengl,3,0
+operating system,2,0
+os x,4,0
+otome,2,0
+outlook,2,0
+outros,2,0
+p2p,4,0
+package,2,0
+painting,2,0
+panel,2,0
+parsing,2,0
+pc,2,0
+pc games,2,0
+pdf,6,0
+performance,5,0
+photos,3,0
+php,2,0
+pixel art,2,0
+pixijs,2,0
+platform,9,0
+platforms,3,0
+playback,2,0
+player,11,0
+plugin,6,0
+plugins,4,0
+png,2,0
+podcast,2,0
+pomodoro,3,0
+postgres,2,0
+postgresql,4,0
+posts,2,0
+powershell,3,0
+privacy,5,0
+privilege escalation,2,0
+productivity,16,0
+program,2,0
+programming,13,0
+project management,3,0
+prototyping,5,0
+proxy,7,0
+ps,2,0
+publishing,2,0
+python,7,0
+qq,2,0
+quality,2,0
+queries,2,0
+r,4,0
+raspberry pi,2,0
+react,47,0
+react components,2,0
+react native,9,0
+react-native,2,0
+reactive,2,0
+real-,2,0
+real-time,3,0
+record,2,0
+red,2,0
+redis,6,0
+redux,10,0
+rendering,3,0
+repl,2,0
+reporting,3,0
+repository,4,0
+research,3,0
+rest,2,0
+reverse engineering,2,0
+ros,2,0
+roslyn,2,0
+rpc,2,0
+rpg,2,0
+rust,5,0
+samples,4,0
+sass,2,0
+schema,2,0
+screenshots,2,0
+scripting,6,0
+scripts,2,0
+sdk,4,0
+search,7,0
+secure,3,0
+secure scuttlebutt,2,0
+security,23,0
+self-hosted,2,0
+serialization,3,0
+server,10,0
+serverless,2,0
+shadowsocks,2,0
+sharepoint,3,0
+sharing,3,0
+shopping,3,0
+silverlight,2,0
+slack,2,0
+smart mirror,2,0
+social media,3,0
+software,92,0
+software development,17,0
+software development kit,2,0
+solution,4,0
+sound,3,0
+soundcloud,3,0
+source code,4,0
+speech,2,0
+speed,3,0
+spotify,5,0
+spreadsheets,2,0
+sql,10,0
+sql client,3,0
+sql server,3,0
+sqlite,2,0
+sticky notes,2,0
+store,2,0
+stories,2,0
+studio,2,0
+style,2,0
+subtitles,2,0
+suite,4,0
+svelte,2,0
+sync,3,0
+system,5,0
+tabs,3,0
+taking,2,0
+task management,3,0
+tasks,3,0
+templates,3,0
+terminal,6,0
+terminal emulators,2,0
+test,5,0
+testing,6,0
+text,3,0
+that,2,0
+them,2,0
+themes,2,0
+time,2,0
+time management,3,0
+timer,2,0
+to-do,2,0
+tool,24,0
+toolbox,2,0
+toolkit,7,0
+tools,14,0
+trading,4,0
+translate,2,0
+translation,4,0
+tumblr,2,0
+tutorials,3,0
+twitch,2,0
+twitter,7,0
+typescript,16,0
+ui,17,0
+ui components,2,0
+uml,2,0
+unit testing,2,0
+unity3d,2,0
+unofficial,4,0
+update,4,0
+user control,2,0
+user experience,2,0
+user interface,2,0
+user interfaces,2,0
+user settings,2,0
+utilities,6,0
+utility,6,0
+uwp,3,0
+vba,2,0
+vbnet,2,0
+version control,6,0
+video,12,0
+viewing,2,0
+visual,7,0
+visual studio,17,0
+visual studio code,2,0
+visualizations,2,0
+vite,3,0
+voice,2,0
+voice control,2,0
+vue,25,0
+vuejs,10,0
+vuex,3,0
+wallet,12,0
+web,39,0
+web application,2,0
+web applications,3,0
+web components,4,0
+web design,2,0
+web development,17,0
+web interface,3,0
+web technologies,3,0
+web testing,3,0
+web-based,4,0
+web3,3,0
+webassembly,2,0
+webgl,6,0
+webpack,6,0
+webrtc,3,0
+website,2,0
+websites,2,0
+websocket,3,0
+websockets,2,0
+wechat,5,0
+whatsapp,2,0
+win,7,0
+windows,125,0
+windows 10,4,0
+windows 11,2,0
+windows 7,2,0
+windows 81,2,0
+windows explorer,4,0
+windows forms,6,0
+winforms,3,0
+wpf,12,0
+wrapper,2,0
+writing,8,0
+xamarin,2,0
+xaml,2,0
+xinput,2,0
+youtube,7,0
