@@ -164,7 +164,7 @@ def setIssues(repo):
         request = requests.post('https://api.github.com/graphql',
                                 json={'query': """
                                         {
-                                            repository(owner: \"""" + repoNameSplit[0] + """\", name: \"""" + repoNameSplit[1] + """\") {                                            
+                                            repository(owner: \"""" + repoNameSplit[0] + """\", name: \"""" + repoNameSplit[1] + """\") {
                                                 issues(first: 100   """ + af + """) {
                                                 nodes {
                                                     closed
@@ -183,28 +183,25 @@ def setIssues(repo):
             response = (request.json())
             if response["data"]["repository"] is None:
                 break
-            # print(response)
             issues = response["data"]["repository"]["issues"]["nodes"]
             hasNextPage = response["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
             endCursor = response["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
             issuesToSave = []
             for issue in issues:
-                # print(issue['closed'])
                 y = issue['createdAt'][2:4]
-                # print(y)
                 if issue['closed']:
                     issuesToSave.append((y, 1, 0, repo["id"]))
                 else:
                     issuesToSave.append((y, 0, 1, repo["id"]))
 
             if len(issuesToSave) > 0:
-                #    try:
-                sql = "INSERT INTO repository_issue (year, open, closed, repository_id) VALUES (%s, %s, %s, %s)"
-                cursor.executemany(sql, issuesToSave)
-                db.commit()
-                # except mysql.connector.Error as err:
-                #     print(f"Error at query: {sql}")
-                #     print("Something went wrong: {}".format(err))
+                try:
+                    sql = "INSERT INTO repository_issue (year, open, closed, repository_id) VALUES (%s, %s, %s, %s)"
+                    cursor.executemany(sql, issuesToSave)
+                    db.commit()
+                except mysql.connector.Error as err:
+                    print(f"Error at query: {sql}")
+                    print("Something went wrong: {}".format(err))
         else:
             print(repo["name_with_owner"]+" failed at setIssue")
             raise Exception("Query failed to run by returning code of {}.".format(
@@ -212,12 +209,12 @@ def setIssues(repo):
 
 
 def setMissingData(item, browser):
-    # if(item["full_description"] == None or len(item["full_description"]) == 0):
-    #     setDescription(item, browser)
-    # if(item["number_of_tags"] == 0):
-    #     setTags(item, browser)
-    # setCreatedAt(item)
-    # setPullRequests(item)
+    if(item["full_description"] == None or len(item["full_description"]) == 0):
+        setDescription(item, browser)
+    if(item["number_of_tags"] == 0):
+        setTags(item, browser)
+    setCreatedAt(item)
+    setPullRequests(item)
     setIssues(item)
 
 
