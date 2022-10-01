@@ -18,6 +18,8 @@ PASSWORD = config["PASSWORD"]
 DATABASE = config["DATABASE"]
 GITHUB_TOKEN = config["GITHUB_TOKEN"]
 
+headers = {"Authorization": ("Bearer " + GITHUB_TOKEN)}
+
 db = mysql.connector.connect(
     host=HOST,
     user=USER,
@@ -116,41 +118,58 @@ def setCreatedAt(repo):
             request.status_code))
 
 
+def auxSetPullRequests(prs,idRepo):
+    cursor.execute("SELECT MAX(id) FROM repository_pull_request")
+    maxId = cursor.fetchall()
+    if (maxId[0]['MAX(id)']==None):
+        idPrTable = 1
+    else: 
+        idPrTable = maxId[0]['MAX(id)']+1
+    for responses in prs:
+        for response in responses:
+            if(response['merged_at']!=None):
+                date = (response['merged_at'])[0:4]
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable, date, idRepo))
+                idPrTable=idPrTable+1
+            elif(response['merged_at']==None and response['closed_at']!=None):
+                date = (response['closed_at'])[0:4]
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable, date, idRepo))
+                idPrTable=idPrTable+1
+            else:
+                date = (response['created_at'])[0:4]
+                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable, date, idRepo))
+                idPrTable=idPrTable+1
+    db.commit()
+    return
+
 def setPullRequests(repo):
     idRepo = repo["id"]
     data = repo["name_with_owner"].split("/")
     owner = data[0]
     repoName = data[1]
-    request = requests.get(
-        "https://api.github.com/repos/%s/%s/pulls?state=all" % (owner, repoName))
-    if request.status_code == 200:
-        responses = (request.json())
-        cursor.execute("SELECT MAX(id) FROM repository_pull_request")
-        maxId = cursor.fetchall()
-        if (maxId[0]['MAX(id)'] == None):
-            idPrTable = 1
-        else:
-            idPrTable = maxId[0]['MAX(id)']+1
-        for response in responses:
-            if(response['merged_at'] != None):
-                date = (response['merged_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)' % (
-                    idPrTable, date, idRepo))
-                idPrTable = idPrTable+1
-            elif(response['merged_at'] == None and response['closed_at'] != None):
-                date = (response['closed_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)' % (
-                    idPrTable, date, idRepo))
-                idPrTable = idPrTable+1
-            else:
-                date = (response['created_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)' % (
-                    idPrTable, date, idRepo))
-                idPrTable = idPrTable+1
-        db.commit()
-        return
+    cursor.execute("select count(`year`) from repository_pull_request rpr where repository_id = %s"%(idRepo))
+    numberOfPrs = cursor.fetchall()
+    prs = []
+    havePages = True
+    page = 1
+    if((numberOfPrs[0]['count(`year`)'])<1):
+        while havePages:
+            url = "https://api.github.com/repos/%s/%s/pulls?state=all&page=%s"%(owner, repoName, page)
+            print(url)
+            try:
+                request = requests.get(url, headers = headers)
+                if request.status_code == 200:
+                        responses = (request.json())
+                        if(len(responses)>0):
+                            prs.append(responses)
+                            page+=1
+                        else:
+                            havePages=False
+            except:
+                print("Erro ao pegar dados de pr: %s"%(repoName))
+                return
+        auxSetPullRequests(prs,idRepo)
     else:
-        print(repo["name_with_owner"]+" failed at set PR")
         return
 
 
@@ -207,7 +226,6 @@ def setIssues(repo):
             raise Exception("Query failed to run by returning code of {}.".format(
                 request.status_code))
 
-
 def setMissingData(item, browser):
     if(item["full_description"] == None or len(item["full_description"]) == 0):
         setDescription(item, browser)
@@ -216,7 +234,6 @@ def setMissingData(item, browser):
     setCreatedAt(item)
     setPullRequests(item)
     setIssues(item)
-
 
 def getAllData():
     browser = webdriver.Chrome(ChromeDriverManager().install())
@@ -229,7 +246,6 @@ def getAllData():
         time.sleep(0.5)
         total -= 1
     browser.quit()
-
 
 def getLastRepoId():
     f = open("lastRepo.txt", "r")
