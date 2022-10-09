@@ -61,7 +61,6 @@ def setDescription(repo, browser):
     cursor.execute(sql)
     db.commit()
 
-
 def setTags(repo, browser):
     url = "https://github.com/"+repo["name_with_owner"]
     idRepo = repo["id"]
@@ -87,7 +86,6 @@ def setTags(repo, browser):
             idTagTable, tag.text, idRepo))
         idTagTable = idTagTable+1
     db.commit()
-
 
 def setCreatedAt(repo):
     id = repo["id"]
@@ -117,7 +115,6 @@ def setCreatedAt(repo):
         raise Exception("Query failed to run by returning code of {}.".format(
             request.status_code))
 
-
 def auxSetPullRequests(prs,idRepo):
     cursor.execute("SELECT MAX(id) FROM repository_pull_request")
     maxId = cursor.fetchall()
@@ -125,20 +122,19 @@ def auxSetPullRequests(prs,idRepo):
         idPrTable = 1
     else: 
         idPrTable = maxId[0]['MAX(id)']+1
-    for responses in prs:
-        for response in responses:
-            if(response['merged_at']!=None):
-                date = (response['merged_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable, date, idRepo))
-                idPrTable=idPrTable+1
-            elif(response['merged_at']==None and response['closed_at']!=None):
-                date = (response['closed_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable, date, idRepo))
-                idPrTable=idPrTable+1
-            else:
-                date = (response['created_at'])[0:4]
-                cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable, date, idRepo))
-                idPrTable=idPrTable+1
+    for pr in prs:
+        if(pr['merged_at']!=None):
+            date = (pr['merged_at'])[0:4]
+            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable, date, idRepo))
+            idPrTable=idPrTable+1
+        elif(pr['merged_at']==None and pr['closed_at']!=None):
+            date = (pr['closed_at'])[0:4]
+            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable, date, idRepo))
+            idPrTable=idPrTable+1
+        else:
+            date = (pr['created_at'])[0:4]
+            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable, date, idRepo))
+            idPrTable=idPrTable+1
     db.commit()
     return
 
@@ -161,7 +157,8 @@ def setPullRequests(repo):
                 if request.status_code == 200:
                         responses = (request.json())
                         if(len(responses)>0):
-                            prs.append(responses)
+                            for pr in responses:
+                                prs.append(pr)
                             page+=1
                         else:
                             havePages=False
@@ -171,7 +168,6 @@ def setPullRequests(repo):
         auxSetPullRequests(prs,idRepo)
     else:
         return
-
 
 def setIssues(repo):
     repoNameSplit = repo["name_with_owner"].split("/")
@@ -227,13 +223,13 @@ def setIssues(repo):
                 request.status_code))
 
 def setMissingData(item, browser):
-    if(item["full_description"] == None or len(item["full_description"]) == 0):
-        setDescription(item, browser)
-    if(item["number_of_tags"] == 0):
-        setTags(item, browser)
-    setCreatedAt(item)
+    # if(item["full_description"] == None or len(item["full_description"]) == 0):
+    #     setDescription(item, browser)
+    # if(item["number_of_tags"] == 0):
+    #     setTags(item, browser)
+    # setCreatedAt(item)
     setPullRequests(item)
-    setIssues(item)
+    # setIssues(item)
 
 def getAllData():
     browser = webdriver.Chrome(ChromeDriverManager().install())
@@ -253,6 +249,5 @@ def getLastRepoId():
     cursor.execute(sql)
     id = cursor.fetchall()
     return id[0]['id']
-
 
 getAllData()
