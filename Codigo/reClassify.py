@@ -81,34 +81,48 @@ def populate_description(limit, offset):
             print("Description: " + description)
 
             if description is not None and len(description) > 0:
-                question_for_openia = f"Classify the repository description {description} according to the following categories: [{categoriesString}]"
-                rulesForQuestion =  "If it suits to more than one category, write then comma separated. If it doens't fit any category, write None."
-                categories_choosen_by_openia = execute_openia(
-                    f"{question_for_openia}.{rulesForQuestion}")
-                if categories_choosen_by_openia is None:
-                    continue
-                
-                categories_by_openia = categories_choosen_by_openia.split(',')
-                print("OpenIA classified word(s): ")
-                print(categories_by_openia)
-                
-                if len(categories_by_openia) > 0:
-                    categoryToSave = []
-                    for category in categories_by_openia:
-                        category = re.sub('[^A-Za-z0-9- ]+', '', category)
-                        category = category.lstrip()
-                        if(category is not None and len(category) > 0 and category != ''):
-                            categoryToSave.append((repository_id, category))
+                question_for_openia = f"Classify the repository description {description} according to exclusively the following categories: [{categoriesString}]"
+                rulesForQuestion =  "If it suits to more than one of the categories, write then comma separated, limited to 1,2 or 3 categories. If it doens't fit any of the categories, write None."
+            
+                for attempt in range(3):
+                    categories_choosen_by_openia = execute_openia(
+                        f"{question_for_openia}.{rulesForQuestion}")
+                    if categories_choosen_by_openia is None:
+                        continue
+                    
+                    categories_by_openia = categories_choosen_by_openia.split(',')
+                    print("OpenIA classified word(s): ")
+                    print(categories_by_openia)
 
-                    if(len(categoryToSave) > 0):
-                        sql = "INSERT INTO repository_description (repository_id, word) VALUES (%s, %s)"
-                        # time.sleep(10)
-                        db_execute_many(sql, categoryToSave)
+                    
+                    if len(categories_by_openia) > 0:
+                        categoryToSave = []
+                        numberOfCategories = 0
+                        for category in categories_by_openia:
+                            category = re.sub('[^A-Za-z0-9- ]+', '', category)
+                            category = category.lstrip()
+                            if(category is not None and len(category) > 0 and category != '' and (category == 'None' or any(category == x for x in listCategories))):
+                                numberOfCategories = numberOfCategories + 1
+                                if (category != 'None'):
+                                    categoryToSave.append((repository_id, category))
 
+                        if(len(categoryToSave) > 0):
+                            sql = "INSERT INTO repository_description (repository_id, word) VALUES (%s, %s)"
+                            # time.sleep(10)
+                            db_execute_many(sql, categoryToSave)
+                        if (numberOfCategories > 0):
+                            break
+                        else:
+                            print(f"Repository did not retrive valid response in attempt {attempt}.\n")
+                            if attempt < 2:
+                                print("Retrying to get a valid answer from Open AI...\n")
+                            else:
+                                print("No attempts left. Repository won't be classified.\n")
             print("---\n")
 
-        offset = offset + limit
-        populate_description(limit, offset)
+        if len(repositories) == limit:
+            offset = offset + limit
+            populate_description(limit, offset)
 
     elif offset == 0:
         print("No repositories found!")
