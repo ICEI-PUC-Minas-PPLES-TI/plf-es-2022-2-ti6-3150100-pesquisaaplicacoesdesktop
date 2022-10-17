@@ -61,6 +61,7 @@ def setDescription(repo, browser):
     cursor.execute(sql)
     db.commit()
 
+
 def setTags(repo, browser):
     url = "https://github.com/"+repo["name_with_owner"]
     idRepo = repo["id"]
@@ -86,6 +87,7 @@ def setTags(repo, browser):
             idTagTable, tag.text, idRepo))
         idTagTable = idTagTable+1
     db.commit()
+
 
 def setCreatedAt(repo):
     id = repo["id"]
@@ -115,112 +117,128 @@ def setCreatedAt(repo):
         raise Exception("Query failed to run by returning code of {}.".format(
             request.status_code))
 
-def auxSetPullRequests(prs,idRepo):
+
+def auxSetPullRequests(prs, idRepo):
     cursor.execute("SELECT MAX(id) FROM repository_pull_request")
     maxId = cursor.fetchall()
-    if (maxId[0]['MAX(id)']==None):
+    if (maxId[0]['MAX(id)'] == None):
         idPrTable = 1
-    else: 
+    else:
         idPrTable = maxId[0]['MAX(id)']+1
     for pr in prs:
-        if(pr['merged_at']!=None):
+        if(pr['merged_at'] != None):
             date = (pr['merged_at'])[0:4]
-            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)'%(idPrTable, date, idRepo))
-            idPrTable=idPrTable+1
-        elif(pr['merged_at']==None and pr['closed_at']!=None):
+            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,1,0,%s)' % (
+                idPrTable, date, idRepo))
+            idPrTable = idPrTable+1
+        elif(pr['merged_at'] == None and pr['closed_at'] != None):
             date = (pr['closed_at'])[0:4]
-            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)'%(idPrTable, date, idRepo))
-            idPrTable=idPrTable+1
+            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,0,0,1,%s)' % (
+                idPrTable, date, idRepo))
+            idPrTable = idPrTable+1
         else:
             date = (pr['created_at'])[0:4]
-            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)'%(idPrTable, date, idRepo))
-            idPrTable=idPrTable+1
+            cursor.execute('insert into repository_pull_request (id,year,open,merged,canceled,repository_id) values (%s,%s,1,0,0,%s)' % (
+                idPrTable, date, idRepo))
+            idPrTable = idPrTable+1
     db.commit()
     return
+
 
 def setPullRequests(repo):
     idRepo = repo["id"]
     data = repo["name_with_owner"].split("/")
     owner = data[0]
     repoName = data[1]
-    cursor.execute("select count(`year`) from repository_pull_request rpr where repository_id = %s"%(idRepo))
+    cursor.execute(
+        "select count(`year`) from repository_pull_request rpr where repository_id = %s" % (idRepo))
     numberOfPrs = cursor.fetchall()
     prs = []
     havePages = True
     page = 1
-    if((numberOfPrs[0]['count(`year`)'])<1):
+    if((numberOfPrs[0]['count(`year`)']) < 1):
         while havePages:
-            url = "https://api.github.com/repos/%s/%s/pulls?state=all&page=%s"%(owner, repoName, page)
+            url = "https://api.github.com/repos/%s/%s/pulls?state=all&page=%s" % (
+                owner, repoName, page)
             print(url)
             try:
-                request = requests.get(url, headers = headers)
+                request = requests.get(url, headers=headers)
                 if request.status_code == 200:
-                        responses = (request.json())
-                        if(len(responses)>0):
-                            for pr in responses:
-                                prs.append(pr)
-                            page+=1
-                        else:
-                            havePages=False
+                    responses = (request.json())
+                    if(len(responses) > 0):
+                        for pr in responses:
+                            prs.append(pr)
+                        page += 1
+                    else:
+                        havePages = False
             except:
-                print("Erro ao pegar dados de pr: %s"%(repoName))
+                print("Erro ao pegar dados de pr: %s" % (repoName))
                 return
-        auxSetPullRequests(prs,idRepo)
+        auxSetPullRequests(prs, idRepo)
     else:
         return
+
 
 def setIssues(repo):
     repoNameSplit = repo["name_with_owner"].split("/")
     hasNextPage = True
     endCursor = None
-    while(hasNextPage == True):
-        af = f', after: "{endCursor}"' if endCursor is not None else ''
+    print(f"Insert issues from {repoNameSplit[0]}")
+    try:
+        while(hasNextPage == True):
+            af = f', after: "{endCursor}"' if endCursor is not None else ''
 
-        request = requests.post('https://api.github.com/graphql',
-                                json={'query': """
-                                        {
-                                            repository(owner: \"""" + repoNameSplit[0] + """\", name: \"""" + repoNameSplit[1] + """\") {
-                                                issues(first: 100   """ + af + """) {
-                                                nodes {
-                                                    closed
-                                                    createdAt
-                                                }
-                                                pageInfo {
-                                                    hasNextPage
-                                                    endCursor
+            request = requests.post('https://api.github.com/graphql',
+                                    json={'query': """
+                                            {
+                                                repository(owner: \"""" + repoNameSplit[0] + """\", name: \"""" + repoNameSplit[1] + """\") {
+                                                    issues(first: 100   """ + af + """) {
+                                                    nodes {
+                                                        closed
+                                                        createdAt
+                                                    }
+                                                    pageInfo {
+                                                        hasNextPage
+                                                        endCursor
+                                                        }
                                                     }
                                                 }
-                                            }
-                                            }
-                                        """
-                                      }, headers={"Authorization": ("Bearer " + GITHUB_TOKEN)})
-        if request.status_code == 200:
-            response = (request.json())
-            if response["data"]["repository"] is None:
-                break
-            issues = response["data"]["repository"]["issues"]["nodes"]
-            hasNextPage = response["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
-            endCursor = response["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
-            issuesToSave = []
-            for issue in issues:
-                y = issue['createdAt'][2:4]
-                if issue['closed']:
-                    issuesToSave.append((y, 1, 0, repo["id"]))
-                else:
-                    issuesToSave.append((y, 0, 1, repo["id"]))
-
-            if len(issuesToSave) > 0:
+                                                }
+                                            """
+                                          }, headers={"Authorization": ("Bearer " + GITHUB_TOKEN)})
+            if request.status_code == 200:
+                response = (request.json())
                 try:
-                    sql = "INSERT INTO repository_issue (year, open, closed, repository_id) VALUES (%s, %s, %s, %s)"
-                    cursor.executemany(sql, issuesToSave)
-                    db.commit()
-                except mysql.connector.Error as err:
-                    print(f"Error at query: {sql}")
-                    print("Something went wrong: {}".format(err))
-        else:
-            print(repo["name_with_owner"]+" failed at setIssue")
-            raise Exception("Query failed to run by returning code of {}.".format(
-                request.status_code))
+                    if response["data"]["repository"] is None:
+                        break
+                    issues = response["data"]["repository"]["issues"]["nodes"]
+                    hasNextPage = response["data"]["repository"]["issues"]["pageInfo"]["hasNextPage"]
+                    endCursor = response["data"]["repository"]["issues"]["pageInfo"]["endCursor"]
+                    issuesToSave = []
+                    for issue in issues:
+                        y = issue['createdAt'][2:4]
+                        if issue['closed']:
+                            issuesToSave.append((y, 1, 0, repo["id"]))
+                        else:
+                            issuesToSave.append((y, 0, 1, repo["id"]))
+
+                    if len(issuesToSave) > 0:
+                        try:
+                            sql = "INSERT INTO repository_issue (year, open, closed, repository_id) VALUES (%s, %s, %s, %s)"
+                            cursor.executemany(sql, issuesToSave)
+                            db.commit()
+                        except mysql.connector.Error as err:
+                            print(f"Error at query: {sql}")
+                            print("Something went wrong: {}".format(err))
+                    else:
+                        print(repo["name_with_owner"]+" failed at setIssue")
+                        raise Exception("Query failed to run by returning code of {}.".format(
+                            request.status_code))
+                except:
+                    break
+    except mysql.connector.Error as err:
+        print(f"Error pegando issues de {repoNameSplit[0]}")
+
 
 def setMissingData(item, browser):
     # if(item["full_description"] == None or len(item["full_description"]) == 0):
@@ -228,8 +246,9 @@ def setMissingData(item, browser):
     # if(item["number_of_tags"] == 0):
     #     setTags(item, browser)
     # setCreatedAt(item)
-    setPullRequests(item)
-    # setIssues(item)
+    # setPullRequests(item)
+    setIssues(item)
+
 
 def getAllData():
     browser = webdriver.Chrome(ChromeDriverManager().install())
@@ -243,11 +262,13 @@ def getAllData():
         total -= 1
     browser.quit()
 
+
 def getLastRepoId():
     f = open("lastRepo.txt", "r")
     sql = 'select id from repository where name_with_owner = "%s"' % (f.read())
     cursor.execute(sql)
     id = cursor.fetchall()
     return id[0]['id']
+
 
 getAllData()
