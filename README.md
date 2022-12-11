@@ -18,30 +18,63 @@
 
 ## 🔖 Sobre
 
-#### Hipótese     
+#### Introdução     
 Ao longo dos anos, os navegadores evoluíram e passaram a ter mais funcionalidades e suportar aplicações mais elaboradas. Nesse contexto, a evolução da internet e a praticidade de acessar os sistemas via web diminuiu a necessidade de se ter uma aplicação desktop. Contudo, alguns segmentos de aplicações necessitam de ser desktop, como antivírus.     
 Nesse sentido, foi pensado que <strong>ainda existem segmentos populares no contexto de aplicações desktop</strong>.
 
 #### GQM (Goal, Question, Metric)      
-Análise de repositórios de aplicações desktop 
-com o objetivo de caracterizar aplicações desktop e seus domínios
-com relação a quantidade de aplicações e suas respectivas métricas
-do ponto de vista de analistas, gerentes e clientes de novos projetos
-no contexto dos repositórios do Github que possuem dependências de aplicações desktop das linguagens C# e JavaScript.
 
-- QP.1: <strong>Para as aplicações desktop que ainda são mantidas, qual o domínio que elas se encontram atualmente?</strong>       
-  - M.1: Proporção de repositórios que possuem descrições e domínios contra que não possuem descrições ou domínios;        
-  - M.2: Percentual da quantidade de repositórios desktops para cada domínio.       
-- QP.2: <strong>A quantidade de aplicações desktop vem diminuindo ao longo da última década?</strong>       
-  - M.3: Média de repositórios de aplicações desktops criados por ano para cada domínio;        
-  - M.4: Média de repositórios de aplicações desktops criados por ano.       
-- QP.3: <strong>Aplicações desktop tem engajamento da comunidade?</strong>       
-  - M.5: Percentual de pull requests merged em relação aos não merged dos repositórios desktop por ano;        
-  - M.6: Percentual de issues fechadas em relação a não fechadas em repositórios de aplicações desktops por ano.       
+Objetivo:
+<strong>Analisar</strong> os Repositórios do Github Dependentes das Tecnologias Electron e Windows Forms (RGDTEW) 
+<strong>com o objetivo de</strong> caracterizar os seus respectivos domínios
+<strong>com relação às</strong> suas métricas de popularidade e por domínios
+<strong>do ponto de vista de</strong> analistas, gerentes e clientes de novos projetos
+<strong>no contexto dos</strong> repositórios do Github que possuem dependência das tecnologias Electron e Windows Forms.
+
+Questões de pesquisa e métricas:
+- [QP.1] Para os RGDTEW, qual o domínio que elas se encontram atualmente?       
+  - [M.1] Proporção de repositórios que possuem descrições e domínios contra que não possuem descrições ou domínios;       
+  - [M.2] Percentual da quantidade de dependentes das tecnologias Electron e Windows Forms para cada domínio.       
+- [QP.2] A quantidade dos RGDTEW vem diminuindo ao longo da última década?       
+  - [M.3] Média dos RGDTEW criados por ano para cada domínio;        
+  - [M.4] Média dos RGDTEW criados por ano.       
+- [QP.3] Os RGDTEW tem engajamento da comunidade?       
+  - [M.5] Percentual de pull requests merged em relação aos não merged dos RGDTEW por ano;        
+  - [M.6] Percentual de issues fechadas em relação a não fechadas dos RGDTEW por ano.       
+
+#### Partes interessadas
+- Desenvolvedores de software analisando tecnologias para projetos;
+- Analistas, clientes e gestores de novos projetos.
+
+#### Resultados
+
+- [QP.1] Para os RGDTEW, qual o domínio que elas se encontram atualmente?       
+  - [M.1] Proporção de repositórios que possuem descrições e domínios contra que não possuem descrições ou domínios;     
+<div align="center"><img width="800px" src="./Artefatos/Imagens/Resultados/M.1.png"></div>
+
+- [QP.1] Para os RGDTEW, qual o domínio que elas se encontram atualmente?       
+  - [M.2] Percentual da quantidade de dependentes das tecnologias Electron e Windows Forms para cada domínio.       
+<div align="center"><img width="800px" src="./Artefatos/Imagens/Resultados/M.2.png"></div>
+
+- [QP.2] A quantidade dos RGDTEW vem diminuindo ao longo da última década?       
+  - [M.3] Média dos RGDTEW criados por ano para cada domínio;        
+<div align="center"><img width="800px" src="./Artefatos/Imagens/Resultados/M.3.png"></div>
+
+- [QP.2] A quantidade dos RGDTEW vem diminuindo ao longo da última década?       
+  - [M.4] Média dos RGDTEW criados por ano.        
+<div align="center"><img width="800px" src="./Artefatos/Imagens/Resultados/M.4.png"></div>
+
+- [QP.3] Os RGDTEW tem engajamento da comunidade?       
+  - [M.5] Percentual de pull requests merged em relação aos não merged dos RGDTEW por ano;     
+<div align="center"><img width="800px" src="./Artefatos/Imagens/Resultados/M.5.png"></div>
+
+- [QP.3] Os RGDTEW tem engajamento da comunidade?       
+  - [M.6] Percentual de issues fechadas em relação a não fechadas dos RGDTEW por ano.
+<div align="center"><img width="800px" src="./Artefatos/Imagens/Resultados/M.6.png"></div>
 
 ---
 
-#### Metodologia
+## ⚙ Metodologia
 
 <div align="center">
     <img width="800px" src="./Artefatos/Imagens/Metodologia.png">
