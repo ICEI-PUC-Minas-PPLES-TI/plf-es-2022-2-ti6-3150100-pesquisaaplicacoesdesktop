@@ -1,6 +1,6 @@
 cff-version: 1.0.1
 message: Please cite this software using these metadata.
-title: Pesquisa Aplicações Desktop
+title: Estudo de Caracterização dos Domínios de Repositórios do Github Dependentes das Tecnologias Electron e Windows Forms
 authors:
   - family-names: Silva Pereira
     given-names: Guilherme Gabriel
@@ -31,7 +31,16 @@ keywords:
   - repositories
   - questions
   - metrics
+  - windows forms
+  - electron
+  - open ai
+  - caracterização
+  - domínios
+  - popularidade
+  - javascript
+  - c#
+  - csharp
 repository-code: https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-2-ti6-3150100-pesquisaaplicacoesdesktop
 license: CC-BY-4.0
 version: 1.0.0
-date-released: 2022-07-14
+date-released: 2022-12-13
