@@ -188,6 +188,7 @@ Essas instruções vão te levar a uma cópia do projeto rodando em sua máquina
 - [Codigo](Codigo)
 - [Divulgacao](Divulgacao)
 - [Documentacao](Documentacao)
+- [Artigo PDF](Documentacao/Estudo%20de%20caracterizaçãao%20de%20aplicações%20desktop%20de%20repositórios%20do%20Github%20por%20meio%20de%20Inteligêencia%20Artificial.pdf)
 - [Artigo Overleaf](https://www.overleaf.com/read/dbbndtfmtwtg)
 - [DataStudio Dashboard](https://datastudio.google.com/s/gbUxKJFy2U0)
 
