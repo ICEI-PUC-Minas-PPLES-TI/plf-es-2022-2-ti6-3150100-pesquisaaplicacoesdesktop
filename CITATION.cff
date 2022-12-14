@@ -21,25 +21,8 @@ authors:
     family-names: Pires Xavier Júnior
     given-names: José Laerte
 keywords:
-  - apps
-  - desktop
-  - research
-  - segment
-  - python
-  - graphql
-  - github
-  - repositories
-  - questions
-  - metrics
-  - windows forms
-  - electron
-  - open ai
-  - caracterização
   - domínios
-  - popularidade
-  - javascript
-  - c#
-  - csharp
+  - desktop
 repository-code: https://github.com/ICEI-PUC-Minas-PPLES-TI/plf-es-2022-2-ti6-3150100-pesquisaaplicacoesdesktop
 license: CC-BY-4.0
 version: 1.0.0
